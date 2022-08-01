@@ -17,5 +17,9 @@
         android:title="Export File"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/action_clear_dump"
+        android:title="Clear Dump"
+        app:showAsAction="never"/>
 
 </menu>

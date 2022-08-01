@@ -2,6 +2,7 @@ package de.androidcrypto.nfchcendefreader;
 
 import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 public class Utils {
 
@@ -143,4 +144,24 @@ public class Utils {
         return URI_PREFIX_MAP[uriPrefix] + new String(message, StandardCharsets.UTF_8);
     }
 
+    private static final byte[] SW_9000 = {
+            (byte)0x90,  // SW1	Status byte 1 - Command processing status
+            (byte)0x00   // SW2	Status byte 2 - Command processing qualifier
+    };
+
+    /**
+     * Method used to check if the last command return SW1SW2 == 9000
+     *
+     * @param pByte
+     *            response to the last command
+     * @return true if the status is 9000 false otherwise
+     */
+    public static boolean isSucceed(final byte[] pByte) {
+        byte[] resultValue = Arrays.copyOfRange(pByte, pByte.length - 2, pByte.length);
+        if (Arrays.equals(resultValue, SW_9000)) {
+            return true;
+        } else {
+            return false;
+        }
+    }
 }
