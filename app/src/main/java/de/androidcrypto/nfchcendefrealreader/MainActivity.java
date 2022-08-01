@@ -82,7 +82,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
         for (int i = 0; i < techList.length; i++) {
             writeToUiAppend(readResult, "TechList: " + techList[i]);
         }
-        String tagId = bytesToHex(tag.getId());
+        String tagId = Utils.bytesToHex(tag.getId());
         writeToUiAppend(readResult, "TagId: " + tagId);
 
         try {
@@ -119,83 +119,107 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
 
                 byte[] command = selectApdu(aid);
                 byte[] responseSelect = isoDep.transceive(command);
-                writeToUiAppend(readResult, "selectApdu with AID: " + bytesToHex(command));
-                writeToUiAppend(readResult, "selectApdu response: " + bytesToHex(responseSelect));
+                writeToUiAppend(readResult, "selectApdu with AID: " + Utils.bytesToHex(command));
+                writeToUiAppend(readResult, "selectApdu response: " + Utils.bytesToHex(responseSelect));
 
                 if (responseSelect == null) {
                     writeToUiAppend(readResult, "selectApdu with AID fails (null)");
                 } else {
-                    writeToUiAppend(readResult, "responseSelect length: " + responseSelect.length + " data: " + bytesToHex(responseSelect));
-                    System.out.println("responseSelect: " + bytesToHex(responseSelect));
+                    writeToUiAppend(readResult, "responseSelect length: " + responseSelect.length + " data: " + Utils.bytesToHex(responseSelect));
+                    System.out.println("responseSelect: " + Utils.bytesToHex(responseSelect));
                 }
 
-                // todo check for 90 00 at the end to proceed
+                if (!Utils.isSucceed(responseSelect)) {
+                    writeToUiAppend(readResult, "responseSelect is not 90 00 - aborted");
+                    System.out.println("responseSelect is not 90 00 - aborted ");
+                    return;
+                }
 
                 // sending cc select = get the capability container
                 String selectCapabilityContainer = "00a4000c02e103";
                 command = Utils.hexStringToByteArray(selectCapabilityContainer);
                 byte[] responseSelectCc = isoDep.transceive(command);
-                writeToUiAppend(readResult, "select CC: " + bytesToHex(command));
-                writeToUiAppend(readResult, "select CC response: " + bytesToHex(responseSelectCc));
-                writeToUiAppend(readResult, "responseSelect length: " + responseSelectCc.length + " data: " + bytesToHex(responseSelectCc));
-                System.out.println("responseSelectCc: " + bytesToHex(responseSelectCc));
+                writeToUiAppend(readResult, "select CC: " + Utils.bytesToHex(command));
+                writeToUiAppend(readResult, "select CC response: " + Utils.bytesToHex(responseSelectCc));
+                writeToUiAppend(readResult, "responseSelect length: " + responseSelectCc.length + " data: " + Utils.bytesToHex(responseSelectCc));
+                System.out.println("responseSelectCc: " + Utils.bytesToHex(responseSelectCc));
 
-                // todo check for 90 00 at the end to proceed
+                if (!Utils.isSucceed(responseSelectCc)) {
+                    writeToUiAppend(readResult, "responseSelectCc is not 90 00 - aborted");
+                    System.out.println("responseSelectCc is not 90 00 - aborted ");
+                    return;
+                }
 
                 // Sending ReadBinary from CC...
                 String sendBinareFromCc = "00b000000f";
                 command = Utils.hexStringToByteArray(sendBinareFromCc);
                 byte[] responseSendBinaryFromCc = isoDep.transceive(command);
-                writeToUiAppend(readResult, "sendBinaryFromCc: " + bytesToHex(command));
-                writeToUiAppend(readResult, "sendBinaryFromCc response: " + bytesToHex(responseSendBinaryFromCc));
-                writeToUiAppend(readResult, "sendBinaryFromCc response length: " + responseSendBinaryFromCc.length + " data: " + bytesToHex(responseSendBinaryFromCc));
-                System.out.println("sendBinaryFromCc response: " + bytesToHex(responseSendBinaryFromCc));
+                writeToUiAppend(readResult, "sendBinaryFromCc: " + Utils.bytesToHex(command));
+                writeToUiAppend(readResult, "sendBinaryFromCc response: " + Utils.bytesToHex(responseSendBinaryFromCc));
+                writeToUiAppend(readResult, "sendBinaryFromCc response length: " + responseSendBinaryFromCc.length + " data: " + Utils.bytesToHex(responseSendBinaryFromCc));
+                System.out.println("sendBinaryFromCc response: " + Utils.bytesToHex(responseSendBinaryFromCc));
 
-                // todo check for 90 00 at the end to proceed
+                if (!Utils.isSucceed(responseSendBinaryFromCc)) {
+                    writeToUiAppend(readResult, "responseSendBinaryFromCc is not 90 00 - aborted");
+                    System.out.println("responseSendBinaryFromCc is not 90 00 - aborted ");
+                    return;
+                }
 
                 // Capability Container header:
                 byte[] capabilityContainerHeader = Arrays.copyOfRange(responseSendBinaryFromCc, 0, responseSendBinaryFromCc.length - 2);
-                writeToUiAppend(readResult, "capabilityContainerHeader length: " + capabilityContainerHeader.length + " data: " + bytesToHex(capabilityContainerHeader));
-                System.out.println("capabilityContainerHeader: " + bytesToHex(capabilityContainerHeader));
+                writeToUiAppend(readResult, "capabilityContainerHeader length: " + capabilityContainerHeader.length + " data: " + Utils.bytesToHex(capabilityContainerHeader));
+                System.out.println("capabilityContainerHeader: " + Utils.bytesToHex(capabilityContainerHeader));
                 System.out.println("capabilityContainerHeader: " + new String(capabilityContainerHeader));
-
-                // todo check for 90 00 at the end to proceed
 
                 // Sending NDEF Select...
                 String sendNdefSelect = "00a4000c02e104";
                 command = Utils.hexStringToByteArray(sendNdefSelect);
                 byte[] responseSendNdefSelect = isoDep.transceive(command);
-                writeToUiAppend(readResult, "sendNdefSelect: " + bytesToHex(command));
-                writeToUiAppend(readResult, "sendNdefSelect response: " + bytesToHex(responseSendNdefSelect));
-                writeToUiAppend(readResult, "sendNdefSelect response length: " + responseSendNdefSelect.length + " data: " + bytesToHex(responseSendNdefSelect));
-                System.out.println("sendNdefSelect response: " + bytesToHex(responseSendNdefSelect));
+                writeToUiAppend(readResult, "sendNdefSelect: " + Utils.bytesToHex(command));
+                writeToUiAppend(readResult, "sendNdefSelect response: " + Utils.bytesToHex(responseSendNdefSelect));
+                writeToUiAppend(readResult, "sendNdefSelect response length: " + responseSendNdefSelect.length + " data: " + Utils.bytesToHex(responseSendNdefSelect));
+                System.out.println("sendNdefSelect response: " + Utils.bytesToHex(responseSendNdefSelect));
 
-                // todo check for 90 00 at the end to proceed
+                if (!Utils.isSucceed(responseSendNdefSelect)) {
+                    writeToUiAppend(readResult, "responseSendNdefSelect is not 90 00 - aborted");
+                    System.out.println("responseSendNdefSelect is not 90 00 - aborted ");
+                    return;
+                }
 
                 // Sending ReadBinary NLEN...
                 String sendReadBinaryNlen = "00b0000002";
                 command = Utils.hexStringToByteArray(sendReadBinaryNlen);
                 byte[] responseSendBinaryNlen = isoDep.transceive(command);
-                writeToUiAppend(readResult, "sendBinaryNlen: " + bytesToHex(command));
-                writeToUiAppend(readResult, "sendBinaryNlen response: " + bytesToHex(responseSendBinaryNlen));
-                writeToUiAppend(readResult, "sendBinaryNlen response length: " + responseSendBinaryNlen.length + " data: " + bytesToHex(responseSendBinaryNlen));
-                System.out.println("sendBinaryNlen response: " + bytesToHex(responseSendBinaryNlen));
+                writeToUiAppend(readResult, "sendBinaryNlen: " + Utils.bytesToHex(command));
+                writeToUiAppend(readResult, "sendBinaryNlen response: " + Utils.bytesToHex(responseSendBinaryNlen));
+                writeToUiAppend(readResult, "sendBinaryNlen response length: " + responseSendBinaryNlen.length + " data: " + Utils.bytesToHex(responseSendBinaryNlen));
+                System.out.println("sendBinaryNlen response: " + Utils.bytesToHex(responseSendBinaryNlen));
 
-                // todo check for 90 00 at the end to proceed
+                if (!Utils.isSucceed(responseSendBinaryNlen)) {
+                    writeToUiAppend(readResult, "responseSendBinaryNlen is not 90 00 - aborted");
+                    System.out.println("responseSendBinaryNlen is not 90 00 - aborted ");
+                    return;
+                }
 
                 // Sending ReadBinary, get NDEF data...
                 String sendReadBinaryNdefData = "00b000000f";
                 command = Utils.hexStringToByteArray(sendReadBinaryNdefData);
                 byte[] responseSendBinaryNdefData = isoDep.transceive(command);
-                writeToUiAppend(readResult, "sendBinaryNdefData: " + bytesToHex(command));
-                writeToUiAppend(readResult, "sendBinaryNdefData response: " + bytesToHex(responseSendBinaryNdefData));
-                writeToUiAppend(readResult, "sendBinaryNdefData response length: " + responseSendBinaryNdefData.length + " data: " + bytesToHex(responseSendBinaryNdefData));
+                writeToUiAppend(readResult, "sendBinaryNdefData: " + Utils.bytesToHex(command));
+                writeToUiAppend(readResult, "sendBinaryNdefData response: " + Utils.bytesToHex(responseSendBinaryNdefData));
+                writeToUiAppend(readResult, "sendBinaryNdefData response length: " + responseSendBinaryNdefData.length + " data: " + Utils.bytesToHex(responseSendBinaryNdefData));
                 writeToUiAppend(readResult, "sendBinaryNdefData response: " + new String(responseSendBinaryNdefData));
-                System.out.println("sendBinaryNdefData response: " + bytesToHex(responseSendBinaryNdefData));
+                System.out.println("sendBinaryNdefData response: " + Utils.bytesToHex(responseSendBinaryNdefData));
                 System.out.println("sendBinaryNdefData response: " + new String(responseSendBinaryNdefData));
 
+                if (!Utils.isSucceed(responseSendBinaryNdefData)) {
+                    writeToUiAppend(readResult, "responseSendBinaryNdefData is not 90 00 - aborted");
+                    System.out.println("responseSendBinaryNdefData is not 90 00 - aborted ");
+                    return;
+                }
+
                 byte[] ndefMessage = Arrays.copyOfRange(responseSendBinaryNdefData, 0, responseSendBinaryNdefData.length - 2);
-                writeToUiAppend(readResult, "ndefMessage length: " + ndefMessage.length + " data: " + bytesToHex(ndefMessage));
+                writeToUiAppend(readResult, "ndefMessage length: " + ndefMessage.length + " data: " + Utils.bytesToHex(ndefMessage));
                 writeToUiAppend(readResult, "ndefMessage: " + new String(ndefMessage));
                 System.out.println("ndefMessage: " + new String(ndefMessage));
 
@@ -251,35 +275,6 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
         }
     }
 
-    /**
-     * Determines whether the specified byte array starts with the specific bytes.
-     *
-     * @param array      The array whose start is tested.
-     * @param startBytes The byte array whose presence at the start of the array is tested.
-     * @return 'true' when the array starts with the specified start bytes, 'false' otherwise.
-     */
-    private static boolean startsWith(byte[] array, byte[] startBytes) {
-        if (array == null || startBytes == null || array.length < startBytes.length) {
-            return false;
-        }
-
-        for (int i = 0; i < startBytes.length; i++) {
-            if (array[i] != startBytes[i]) {
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-    private static byte[] trim(byte[] bytes) {
-        int i = bytes.length - 1;
-        while (i >= 0 && bytes[i] == 0) {
-            --i;
-        }
-        return Arrays.copyOf(bytes, i + 1);
-    }
-
     // https://stackoverflow.com/a/51338700/8166854
     private byte[] selectApdu(byte[] aid) {
         byte[] commandApdu = new byte[6 + aid.length];
@@ -291,73 +286,6 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
         System.arraycopy(aid, 0, commandApdu, 5, aid.length);
         commandApdu[commandApdu.length - 1] = (byte) 0x00;  // Le
         return commandApdu;
-    }
-
-    public static List<byte[]> divideArray(byte[] source, int chunksize) {
-
-        List<byte[]> result = new ArrayList<byte[]>();
-        int start = 0;
-        while (start < source.length) {
-            int end = Math.min(source.length, start + chunksize);
-            result.add(Arrays.copyOfRange(source, start, end));
-            start += chunksize;
-        }
-        return result;
-    }
-
-    public static int byteArrayToInt(byte[] byteArray) {
-        if (byteArray == null) {
-            throw new IllegalArgumentException("Parameter \'byteArray\' cannot be null");
-        } else {
-            return byteArrayToInt(byteArray, 0, byteArray.length);
-        }
-    }
-
-    public static int byteArrayToInt(byte[] byteArray, int startPos, int length) {
-        if (byteArray == null) {
-            throw new IllegalArgumentException("Parameter \'byteArray\' cannot be null");
-        } else if (length > 0 && length <= 4) {
-            if (startPos >= 0 && byteArray.length >= startPos + length) {
-                int value = 0;
-
-                for (int i = 0; i < length; ++i) {
-                    value += (byteArray[startPos + i] & 255) << 8 * (length - i - 1);
-                }
-
-                return value;
-            } else {
-                throw new IllegalArgumentException("Length or startPos not valid");
-            }
-        } else {
-            throw new IllegalArgumentException("Length must be between 1 and 4. Length = " + length);
-        }
-    }
-
-    public static String bytesToHex(byte[] bytes) {
-        StringBuffer result = new StringBuffer();
-        for (byte b : bytes) result.append(Integer.toString((b & 0xff) + 0x100, 16).substring(1));
-        return result.toString();
-    }
-
-    private String getDec(byte[] bytes) {
-        long result = 0;
-        long factor = 1;
-        for (int i = 0; i < bytes.length; ++i) {
-            long value = bytes[i] & 0xffl;
-            result += value * factor;
-            factor *= 256l;
-        }
-        return result + "";
-    }
-
-    public static byte[] hexStringToByteArray(String s) {
-        int len = s.length();
-        byte[] data = new byte[len / 2];
-        for (int i = 0; i < len; i += 2) {
-            data[i / 2] = (byte) ((Character.digit(s.charAt(i), 16) << 4)
-                    + Character.digit(s.charAt(i + 1), 16));
-        }
-        return data;
     }
 
     private void writeToUiAppend(TextView textView, String message) {
@@ -381,39 +309,6 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
                     message,
                     Toast.LENGTH_SHORT).show();
         });
-    }
-
-    private byte[] getFastTagDataRange(NfcA nfcA, int fromPage, int toPage) {
-        byte[] response;
-        byte[] command = new byte[]{
-                (byte) 0x3A,  // FAST_READ
-                (byte) (fromPage & 0x0ff),
-                (byte) (toPage & 0x0ff),
-        };
-        try {
-            response = nfcA.transceive(command); // response should be 16 bytes = 4 pages
-            if (response == null) {
-                // either communication to the tag was lost or a NACK was received
-                writeToUiAppend(readResult, "ERROR on reading page");
-                return null;
-            } else if ((response.length == 1) && ((response[0] & 0x00A) != 0x00A)) {
-                // NACK response according to Digital Protocol/T2TOP
-                writeToUiAppend(readResult, "ERROR NACK received");
-                // Log and return
-                return null;
-            } else {
-                // success: response contains ACK or actual data
-            }
-        } catch (TagLostException e) {
-            // Log and return
-            writeToUiAppend(readResult, "ERROR Tag lost exception");
-            return null;
-        } catch (IOException e) {
-            writeToUiAppend(readResult, "ERROR IOException: " + e);
-            e.printStackTrace();
-            return null;
-        }
-        return response;
     }
 
     private void showWirelessSettings() {
@@ -474,7 +369,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
         String filename = tagTypeString + "_" + tagIdString + ".txt";
         // sanity check
         if (filename.equals("")) {
-            writeToUiToast("scan a tag before writng the content to a file :-)");
+            writeToUiToast("scan a tag before writing the content to a file :-)");
             return;
         }
         intent.putExtra(Intent.EXTRA_TITLE, filename);
@@ -578,6 +473,16 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
                 //Intent i = new Intent(MainActivity.this, AddEntryActivity.class);
                 //startActivity(i);
                 exportDumpFile();
+                return false;
+            }
+        });
+
+        MenuItem mClearDump = menu.findItem(R.id.action_clear_dump);
+        mClearDump.setOnMenuItemClickListener(new MenuItem.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(MenuItem item) {
+                dumpExportString = "";
+                readResult.setText("read result");
                 return false;
             }
         });
