@@ -1,4 +1,4 @@
-package de.androidcrypto.nfchcendefreader;
+package de.androidcrypto.nfchcendefrealreader;
 
 import android.Manifest;
 import android.app.Activity;
@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements NfcAdapter.Reader
                 String nfcaContent = "IsoDep reading" + "\n";
 
                 // now we run the select command with AID
-                String nfcHecNdefAid = "F0394148148100";
+                String nfcHecNdefAid = "D2760000850101";
                 byte[] aid = Utils.hexStringToByteArray(nfcHecNdefAid);
 
                 byte[] command = selectApdu(aid);

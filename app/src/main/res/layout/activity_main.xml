@@ -40,7 +40,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:padding="10dp"
-                android:text="This example expects a type-4 tag with an NDEF record (RTD_TEXT). It uses an aid-filter F0394148148100 for the APDU SELECT command. When a tag is discovered the data from all pages will be read."
+                android:text="This example expects a type-4 tag with an NDEF record (RTD_TEXT). It uses an aid-filter D2760000850101 for the APDU SELECT command. When a tag is discovered the data from all pages will be read."
                 android:textAlignment="center"
                 android:textSize="16sp"
                 android:textStyle="bold" />

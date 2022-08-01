@@ -1,4 +1,4 @@
-package de.androidcrypto.nfchcendefreader;
+package de.androidcrypto.nfchcendefrealreader;
 
 import java.lang.reflect.Array;
 import java.nio.charset.StandardCharsets;

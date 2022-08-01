@@ -1,4 +1,4 @@
-package de.androidcrypto.nfchcendefreader;
+package de.androidcrypto.nfchcendefrealreader;
 
 import org.junit.Test;
 
